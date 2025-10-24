@@ -9,17 +9,55 @@ function UserDetail(){
     const {id} = useParams();
     const navigate = useNavigate();
     const [user, setUser] = useState<User|null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if(id) {
-            fetchUserById(parseInt(id)).then(data => {
-                setUser(data);
-            });
+            setLoading(true);
+            fetchUserById(parseInt(id))
+                .then(data => {
+                    setUser(data);
+                    setLoading(false);
+                })
+                .catch(err => {
+                    setError('Impossible de charger les détails de l\'utilisateur');
+                    setLoading(false);
+                    console.error(err);
+                });
         }
     }, [id]);
 
+    if(loading){
+        return <div className="loading">Chargement des détails...</div>;
+    }
+
+    if(error){
+        return (
+            <div className="user-detail-container">
+                <div className="error">
+                    <span className="error-icon">⚠️</span>
+                    <p>{error}</p>
+                    <button onClick={() => navigate('/')}>
+                        Retour à la liste
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     if(!user){
-        return <div className="loading">Chargement...</div>;
+        return (
+            <div className="user-detail-container">
+                <div className="error">
+                    <span className="error-icon">❓</span>
+                    <p>Utilisateur non trouvé</p>
+                    <button onClick={() => navigate('/')}>
+                        Retour à la liste
+                    </button>
+                </div>
+            </div>
+        );
     }
 
     return(
@@ -41,37 +79,37 @@ function UserDetail(){
 
                 <div className="id-card-info">
                   <div className="id-card-field">
-                    <span className="id-card-label">👤 Username:</span>
+                    <span className="id-card-label">Username:</span>
                     <span className="id-card-value">{user.username}</span>
                   </div>
 
                   <div className="id-card-field">
-                    <span className="id-card-label">📧 Email:</span>
+                    <span className="id-card-label">Email:</span>
                     <span className="id-card-value">{user.email}</span>
                   </div>
 
                   <div className="id-card-field">
-                    <span className="id-card-label">📱 Téléphone:</span>
+                    <span className="id-card-label">Téléphone:</span>
                     <span className="id-card-value">{user.phone}</span>
                   </div>
 
                   <div className="id-card-field">
-                    <span className="id-card-label">🎂 Âge:</span>
+                    <span className="id-card-label">Âge:</span>
                     <span className="id-card-value">{user.age} ans</span>
                   </div>
 
                   <div className="id-card-field">
-                    <span className="id-card-label">⚧ Genre:</span>
+                    <span className="id-card-label">Genre:</span>
                     <span className="id-card-value">{user.gender}</span>
                   </div>
 
                   <div className="id-card-field">
-                    <span className="id-card-label">📅 Né(e) le:</span>
+                    <span className="id-card-label">Né(e) le:</span>
                     <span className="id-card-value">{new Date(user.birthDate).toLocaleDateString('fr-FR')}</span>
                   </div>
 
                   <div className="id-card-field">
-                    <span className="id-card-label">📍 Adresse:</span>
+                    <span className="id-card-label">Adresse:</span>
                     <span className="id-card-value">
                       {user.address.address}, {user.address.city}, {user.address.state} {user.address.postalCode}, {user.address.country}
                     </span>

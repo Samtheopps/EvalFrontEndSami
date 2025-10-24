@@ -70,8 +70,5 @@
   gap: 0.5rem;
 }
 
-.user-email::before {
-  content: '📧';
-  font-size: 1rem;
-}
+
 
