@@ -5,6 +5,7 @@ import { UserCard } from '../UserCard/UserCard';
 import { SearchBar } from '../SearchBar/SearchBar';
 import { SortSelect, type SortOption } from '../SortSelect/SortSelect';
 import { Pagination } from '../Pagination/Pagination';
+import { ThemeToggle } from '../ThemeToggle/ThemeToggle';
 import './UserList.css';
 
 const USERS_PER_PAGE = 10;
@@ -91,8 +92,10 @@ export const UserList = () => {
   }
 
   return (
-    <div className="user-list">
-      <h1>Liste des Utilisateurs</h1>
+    <>
+      <ThemeToggle />
+      <div className="user-list">
+        <h1>Liste des Utilisateurs</h1>
 
       <div className="search-container">
         <SearchBar
@@ -129,5 +132,6 @@ export const UserList = () => {
         />
       )}
     </div>
+    </>
   );
 };
