@@ -26,7 +26,7 @@ function UserDetail(){
         <div className="user-detail-container">
            <div className="id-card">
               <div className="id-card-header">
-                <h2>🪪 Carte d'Identité</h2>
+                <h2>Information</h2>
                 <div className="id-card-photo-container">
                   <img
                     src={user.image}
