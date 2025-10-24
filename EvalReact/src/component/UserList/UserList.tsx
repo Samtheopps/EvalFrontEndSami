@@ -7,9 +7,7 @@ import { SortSelect, type SortOption } from '../SortSelect/SortSelect';
 import { Pagination } from '../Pagination/Pagination';
 import { ThemeToggle } from '../ThemeToggle/ThemeToggle';
 import './UserList.css';
-
 const USERS_PER_PAGE = 10;
-
 export const UserList = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +15,6 @@ export const UserList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('none');
   const [currentPage, setCurrentPage] = useState(1);
-
   useEffect(() => {
     const loadUsers = async () => {
       try {
@@ -31,12 +28,10 @@ export const UserList = () => {
         setLoading(false);
       }
     };
-
     loadUsers();
   }, []);
-
-  // ✅ Mémoïse le filtrage
   const filteredUsers = useMemo(() => {
+    if (!searchTerm) return users;
     const term = searchTerm.toLowerCase();
     return users.filter(user =>
       user.firstName.toLowerCase().includes(term) ||
@@ -44,8 +39,6 @@ export const UserList = () => {
       user.email.toLowerCase().includes(term)
     );
   }, [users, searchTerm]);
-
-  // ✅ Mémoïse le tri
   const sortedUsers = useMemo(() => {
     return [...filteredUsers].sort((a, b) => {
       if (sortBy === 'name') return a.lastName.localeCompare(b.lastName);
@@ -53,21 +46,16 @@ export const UserList = () => {
       return 0;
     });
   }, [filteredUsers, sortBy]);
-
-  // ✅ Mémoïse la pagination
   const paginatedUsers = useMemo(() => {
     const startIndex = (currentPage - 1) * USERS_PER_PAGE;
     return sortedUsers.slice(startIndex, startIndex + USERS_PER_PAGE);
   }, [sortedUsers, currentPage]);
-
   const totalPages = Math.ceil(sortedUsers.length / USERS_PER_PAGE);
-
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) {
       setCurrentPage(totalPages);
     }
   }, [currentPage, totalPages]);
-
   if (loading) {
     return (
       <div className="user-list">
@@ -78,7 +66,6 @@ export const UserList = () => {
       </div>
     );
   }
-
   if (error) {
     return (
       <div className="user-list">
@@ -90,48 +77,43 @@ export const UserList = () => {
       </div>
     );
   }
-
   return (
     <>
       <ThemeToggle />
       <div className="user-list">
         <h1>Liste des Utilisateurs</h1>
-
-      <div className="search-container">
-        <SearchBar
-          searchTerm={searchTerm}
-          onSearchChange={(value) => {
-            setSearchTerm(value);
-            setCurrentPage(1);
-          }}
-          resultCount={filteredUsers.length}
-        />
+        <div className="search-container">
+          <SearchBar
+            searchTerm={searchTerm}
+            onSearchChange={(value) => {
+              setSearchTerm(value);
+              setCurrentPage(1);
+            }}
+            resultCount={filteredUsers.length}
+          />
+        </div>
+        <div className="sort-container">
+          <SortSelect
+            sortBy={sortBy}
+            onSortChange={(value) => {
+              setSortBy(value);
+              setCurrentPage(1);
+            }}
+          />
+        </div>
+        <div className="user-grid">
+          {paginatedUsers.map(user => (
+            <UserCard key={user.id} user={user} />
+          ))}
+        </div>
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
-
-      <div className="sort-container">
-        <SortSelect
-          sortBy={sortBy}
-          onSortChange={(value) => {
-            setSortBy(value);
-            setCurrentPage(1);
-          }}
-        />
-      </div>
-
-      <div className="user-grid">
-        {paginatedUsers.map(user => (
-          <UserCard key={user.id} user={user} />
-        ))}
-      </div>
-
-      {totalPages > 1 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
-      )}
-    </div>
     </>
   );
 };

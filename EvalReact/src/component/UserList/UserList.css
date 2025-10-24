@@ -93,6 +93,17 @@
   pointer-events: none;
 }
 
+/* Filters Container (Favoris + Tri) */
+.filters-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 3rem;
+  max-width: 700px;
+  flex-wrap: wrap;
+}
+
 /* No Results */
 .no-results {
   grid-column: 1 / -1;
