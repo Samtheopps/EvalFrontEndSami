@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import type { User } from '../../model/User';
 import { fetchUserData } from '../../data/dataApi';
 import { UserCard } from '../UserCard/UserCard';
@@ -34,24 +34,32 @@ export const UserList = () => {
     loadUsers();
   }, []);
 
-  const filteredUsers = users.filter(user => {
+  // ✅ Mémoïse le filtrage
+  const filteredUsers = useMemo(() => {
     const term = searchTerm.toLowerCase();
-    return (
+    return users.filter(user =>
       user.firstName.toLowerCase().includes(term) ||
       user.lastName.toLowerCase().includes(term) ||
       user.email.toLowerCase().includes(term)
     );
-  });
+  }, [users, searchTerm]);
 
-  const sortedUsers = [...filteredUsers].sort((a, b) => {
-    if (sortBy === 'name') return a.lastName.localeCompare(b.lastName);
-    if (sortBy === 'age') return a.age - b.age;
-    return 0;
-  });
+  // ✅ Mémoïse le tri
+  const sortedUsers = useMemo(() => {
+    return [...filteredUsers].sort((a, b) => {
+      if (sortBy === 'name') return a.lastName.localeCompare(b.lastName);
+      if (sortBy === 'age') return a.age - b.age;
+      return 0;
+    });
+  }, [filteredUsers, sortBy]);
+
+  // ✅ Mémoïse la pagination
+  const paginatedUsers = useMemo(() => {
+    const startIndex = (currentPage - 1) * USERS_PER_PAGE;
+    return sortedUsers.slice(startIndex, startIndex + USERS_PER_PAGE);
+  }, [sortedUsers, currentPage]);
 
   const totalPages = Math.ceil(sortedUsers.length / USERS_PER_PAGE);
-  const startIndex = (currentPage - 1) * USERS_PER_PAGE;
-  const paginatedUsers = sortedUsers.slice(startIndex, startIndex + USERS_PER_PAGE);
 
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) {
@@ -86,7 +94,7 @@ export const UserList = () => {
     <div className="user-list">
       <h1>Liste des Utilisateurs</h1>
 
-      <div className="controls">
+      <div className="search-container">
         <SearchBar
           searchTerm={searchTerm}
           onSearchChange={(value) => {
@@ -95,6 +103,9 @@ export const UserList = () => {
           }}
           resultCount={filteredUsers.length}
         />
+      </div>
+
+      <div className="sort-container">
         <SortSelect
           sortBy={sortBy}
           onSortChange={(value) => {
@@ -105,16 +116,9 @@ export const UserList = () => {
       </div>
 
       <div className="user-grid">
-        {paginatedUsers.length > 0 ? (
-          paginatedUsers.map((user) => (
-            <UserCard key={user.id} user={user} />
-          ))
-        ) : (
-          <div className="no-results">
-            <span>🔍</span>
-            <p>Aucun utilisateur trouvé</p>
-          </div>
-        )}
+        {paginatedUsers.map(user => (
+          <UserCard key={user.id} user={user} />
+        ))}
       </div>
 
       {totalPages > 1 && (
