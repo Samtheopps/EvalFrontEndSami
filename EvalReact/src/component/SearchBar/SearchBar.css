@@ -18,7 +18,7 @@
 
 .search-input:focus {
   outline: none;
-  border-color: var(--accent-cyan);
+  border-color: var(--accent-primary);
   box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
 }
 
@@ -31,7 +31,7 @@
   right: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
