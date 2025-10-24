@@ -1,14 +1,21 @@
-import type {User} from "../model/Users";
+import type {User} from "../../model/User";
 import '../../App.css';
 import './UserCard.css';
+import { useNavigate } from 'react-router-dom';
 
 interface UserCardProps {
   user: User;
 }
 
 export const UserCard = ({ user }: UserCardProps) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/user/${user.id}`);
+  };
+
   return (
-    <div className="user-card">
+    <div className="user-card" onClick={handleClick} style={{ cursor: 'pointer' }}>
       <img
         src={user.image}
         alt={user.firstName + ' ' + user.lastName}
