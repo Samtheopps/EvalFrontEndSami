@@ -3,6 +3,8 @@ import type { User } from '../../model/User';
 import { fetchUserData } from '../../data/dataApi';
 import { UserCard } from '../UserCard/UserCard';
 import './UserList.css';
+import { SearchBar } from '../SearchBar/SearchBar';
+
 
 
 export const UserList = () => {
@@ -68,13 +70,11 @@ export const UserList = () => {
       <h1>Liste des Utilisateurs</h1>
 
       <div className="search-container">
-        <input
-          type="text"
-          placeholder="🔍 Rechercher par nom, prénom ou email..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
-        />
+          <SearchBar
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              resultCount={filteredUsers.length}
+          />
         {searchTerm && (
           <span className="search-results">
             {filteredUsers.length} résultat{filteredUsers.length > 1 ? 's' : ''}
