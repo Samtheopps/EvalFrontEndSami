@@ -2,9 +2,15 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import { BrowserRouter } from 'react-router-dom'
+import { FavoritesProvider } from './hooks/useFavorites'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <FavoritesProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </FavoritesProvider>
   </StrictMode>,
 )
