@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react';
 import type { User } from '../../model/User';
 import { fetchUserData } from '../../data/dataApi';
 import { UserCard } from '../UserCard/UserCard';
-import './UserList.css';
 import { SearchBar } from '../SearchBar/SearchBar';
-
-
+import { SortSelect, type SortOption } from '../SortSelect/SortSelect';
+import './UserList.css';
 
 export const UserList = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<SortOption>('none');
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -30,7 +30,6 @@ export const UserList = () => {
     loadUsers();
   }, []);
 
-  // Filtrer les utilisateurs en temps réel
   const filteredUsers = users.filter(user => {
     const term = searchTerm.toLowerCase();
     return (
@@ -38,6 +37,12 @@ export const UserList = () => {
       user.lastName.toLowerCase().includes(term) ||
       user.email.toLowerCase().includes(term)
     );
+  });
+
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
+    if (sortBy === 'name') return a.lastName.localeCompare(b.lastName);
+    if (sortBy === 'age') return a.age - b.age;
+    return 0;
   });
 
   if (loading) {
@@ -57,9 +62,7 @@ export const UserList = () => {
         <div className="error">
           <span className="error-icon">⚠️</span>
           <p>{error}</p>
-          <button onClick={() => window.location.reload()}>
-            Réessayer
-          </button>
+          <button onClick={() => window.location.reload()}>Réessayer</button>
         </div>
       </div>
     );
@@ -69,22 +72,18 @@ export const UserList = () => {
     <div className="user-list">
       <h1>Liste des Utilisateurs</h1>
 
-      <div className="search-container">
-          <SearchBar
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              resultCount={filteredUsers.length}
-          />
-        {searchTerm && (
-          <span className="search-results">
-            {filteredUsers.length} résultat{filteredUsers.length > 1 ? 's' : ''}
-          </span>
-        )}
+      <div className="controls">
+        <SearchBar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          resultCount={filteredUsers.length}
+        />
+        <SortSelect sortBy={sortBy} onSortChange={setSortBy} />
       </div>
 
       <div className="user-grid">
-        {filteredUsers.length > 0 ? (
-          filteredUsers.map((user) => (
+        {sortedUsers.length > 0 ? (
+          sortedUsers.map((user) => (
             <UserCard key={user.id} user={user} />
           ))
         ) : (
