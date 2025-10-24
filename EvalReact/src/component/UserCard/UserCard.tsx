@@ -1,6 +1,5 @@
 import type {User} from "../model/Users";
-
-import '../App.css';
+import '../../App.css';
 import './UserCard.css';
 
 interface UserCardProps {
@@ -19,8 +18,6 @@ export const UserCard = ({ user }: UserCardProps) => {
       <div className="user-content">
         <h3 className="user-name">{user.firstName} {user.lastName}</h3>
         <p className="user-email">{user.email}</p>
-        <p className="user-phone">{user.phone}</p>
-        <p className="user-username">Username: {user.username}</p>
       </div>
     </div>
   );
