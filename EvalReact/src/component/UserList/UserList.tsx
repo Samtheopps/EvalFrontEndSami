@@ -4,7 +4,10 @@ import { fetchUserData } from '../../data/dataApi';
 import { UserCard } from '../UserCard/UserCard';
 import { SearchBar } from '../SearchBar/SearchBar';
 import { SortSelect, type SortOption } from '../SortSelect/SortSelect';
+import { Pagination } from '../Pagination/Pagination';
 import './UserList.css';
+
+const USERS_PER_PAGE = 10;
 
 export const UserList = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -12,6 +15,7 @@ export const UserList = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('none');
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -45,6 +49,16 @@ export const UserList = () => {
     return 0;
   });
 
+  const totalPages = Math.ceil(sortedUsers.length / USERS_PER_PAGE);
+  const startIndex = (currentPage - 1) * USERS_PER_PAGE;
+  const paginatedUsers = sortedUsers.slice(startIndex, startIndex + USERS_PER_PAGE);
+
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
   if (loading) {
     return (
       <div className="user-list">
@@ -75,15 +89,24 @@ export const UserList = () => {
       <div className="controls">
         <SearchBar
           searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
+          onSearchChange={(value) => {
+            setSearchTerm(value);
+            setCurrentPage(1);
+          }}
           resultCount={filteredUsers.length}
         />
-        <SortSelect sortBy={sortBy} onSortChange={setSortBy} />
+        <SortSelect
+          sortBy={sortBy}
+          onSortChange={(value) => {
+            setSortBy(value);
+            setCurrentPage(1);
+          }}
+        />
       </div>
 
       <div className="user-grid">
-        {sortedUsers.length > 0 ? (
-          sortedUsers.map((user) => (
+        {paginatedUsers.length > 0 ? (
+          paginatedUsers.map((user) => (
             <UserCard key={user.id} user={user} />
           ))
         ) : (
@@ -93,6 +116,14 @@ export const UserList = () => {
           </div>
         )}
       </div>
+
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </div>
   );
 };
