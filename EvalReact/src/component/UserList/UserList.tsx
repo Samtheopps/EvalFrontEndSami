@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { User } from '../../model/User';
 import { fetchUserData } from '../../data/dataApi';
 import { UserCard } from '../UserCard/UserCard';
+import './UserList.css';
 
 
 export const UserList = () => {
